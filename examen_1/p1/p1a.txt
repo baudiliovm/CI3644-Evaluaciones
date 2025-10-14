@@ -1,0 +1,53 @@
+i. Diga qué tipo de alcances y asociaciones posee, argumentando las ventajas y desventajas de la decisión tomada por los diseñadores del lenguaje, en el contexto de sus usuarios objetivos.
+
+Bash implementa un modelo de alcance predominantemente dinámico y global. Por defecto, toda variable declarada en un script posee un alcance global, lo que significa que es accesible desde cualquier punto del programa, incluyendo el interior de las funciones. Para restringir la visibilidad de una variable al contexto de una función, es necesario utilizar la palabra clave `local`.
+
+* Ventajas de diseño: Esta decisión agiliza considerablemente el desarrollo de scripts sencillos y tareas de automatización, que constituyen el caso de uso principal del lenguaje para sus usuarios objetivos tales como administradores de sistemas o desarrolladores DevOps. El programador no necesita gestionar explícitamente el paso de variables entre funciones para scripts lineales.
+
+* Desventajas de diseño: En aplicaciones complejas, el alcance global por defecto incrementa el riesgo de colisión de nombres y efectos secundarios no deseados (una función puede modificar una variable global de forma imprevista). Esto dificulta la modularidad y el mantenimiento del código a gran escala.
+
+Asociación de Tipos (Type Binding):
+Bash es un lenguaje de tipado dinámico. Las variables no poseen un tipo de dato fijo en su declaración; el tipo es inferido en tiempo de ejecución según el contexto de la operación. Una misma variable puede contener un número en un instante y una cadena de texto en otro.
+
+* Ventajas: Proporciona una alta flexibilidad y reduce la verbosidad del código, lo cual es ideal para la escritura rápida de scripts.
+* Desventajas: Aumenta la probabilidad de errores en tiempo de ejecución si se intenta realizar una operación con un tipo de dato inadecuado.
+
+
+ii. Diga qué tipo de módulos ofrece (de tenerlos) y las diferentes formas de importar y exportar nombres.
+
+El lenguaje Bash carece de un sistema de modularidad nativo comparable al de lenguajes como Python (`import`) o JavaScript (`require`).
+
+Importación de Nombres y Código:
+La reutilización de código se logra mediante el comando `source` (cuyo alias es el carácter `.`). Este mecanismo funciona incluyendo y ejecutando el contenido de un archivo de script dentro del contexto del shell actual.
+
+* Ejemplo: `source mis_funciones.sh`
+* Al ejecutar esta línea, todas las funciones y variables definidas en `mis_funciones.sh` se cargan en el entorno del script que la invocó.
+
+Exportación de Nombres:
+El comando `export` no está relacionado con la modularidad del código, sino con la herencia de variables de entorno. Al declarar `export MI_VARIABLE="valor"`, dicha variable se hace visible para cualquier proceso hijo que sea invocado desde el script actual. Su propósito es configurar el entorno para sub-procesos, no compartir código entre archivos de un mismo programa.
+
+
+iii. Diga si el lenguaje ofrece la posibilidad de crear aliases, sobrecarga y polimorfismo. En caso afirmativo, dé algunos ejemplos.
+
+* Alias: Sí. Bash ofrece soporte nativo para la creación de alias mediante el comando `alias`. Esta característica permite definir nombres abreviados para comandos o secuencias de comandos más complejos.
+  - Ejemplo: `alias ll='ls -alF'`
+
+* Sobrecarga (Overloading): No. El lenguaje no soporta la sobrecarga de funciones en el sentido tradicional. No es posible definir múltiples funciones con el mismo identificador pero con diferente número o tipo de parámetros. Es posible, sin embargo, simular este comportamiento de forma procedural dentro de una única función, inspeccionando el número de argumentos recibidos (`$#`) y actuando en consecuencia.
+
+* Polimorfismo: No. Como lenguaje de paradigma procedural y no orientado a objetos, Bash no ofrece polimorfismo. Los conceptos de clases, herencia e interfaces dinámicas son ajenos a su diseño.
+
+
+iv. Diga qué herramientas ofrece a potenciales desarrolladores, como: compiladores, intérpretes, debuggers, profilers, frameworks, etc.
+
+Bash cuenta con un robusto ecosistema de herramientas para el desarrollo de scripts:
+
+* Intérprete: El propio programa `/bin/bash` es el intérprete canónico del lenguaje. Ejecuta los scripts de forma secuencial, línea por línea. No existe un compilador, ya que es un lenguaje puramente interpretado.
+
+* Depuradores (Debuggers): Bash incluye potentes opciones nativas para la depuración. La más utilizada es la opción de ejecución `bash -x`, que activa el modo de trazado (tracing), imprimiendo cada comando antes de su ejecución. Para depuración más avanzada, existen herramientas externas como `bashdb`.
+
+* Analizadores de Código Estático (Linters): La herramienta `ShellCheck` se ha consolidado como el estándar de facto para el análisis estático de scripts de Bash. Identifica errores de sintaxis, malas prácticas y posibles bugs antes de la ejecución, mejorando significativamente la calidad y robustez del código.
+
+* Frameworks de Pruebas: Para facilitar el desarrollo basado en pruebas (TDD) y la creación de pruebas unitarias, la comunidad ha desarrollado varios frameworks. Los más destacados son `shunit2`, un framework clásico y funcional, y `BATS (Bash Automated Testing System)`, una alternativa con una sintaxis más moderna.
+
+* Profilers: No existen herramientas de profiling específicas y extendidas para Bash como en otros lenguajes. El rendimiento se suele medir con utilidades del sistema como `time` o analizar con herramientas de propósito general como `strace`.
+```
