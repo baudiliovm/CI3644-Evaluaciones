@@ -8,9 +8,14 @@ declare -gA TRANSLATORS  # TRANSLATORS[origen]="destino,base"
 
 # Inicializa todas las estructuras de datos.
 td_init() {
-  PROGRAMS=()
-  INTERPRETERS=()
-  TRANSLATORS=()
+  unset PROGRAMS
+  unset INTERPRETERS
+  unset TRANSLATORS
+  unset CACHE_EXEC
+  declare -gA PROGRAMS
+  declare -gA INTERPRETERS
+  declare -gA TRANSLATORS
+  declare -gA CACHE_EXEC
 }
 
 td_define_program() {
