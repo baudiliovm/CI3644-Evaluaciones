@@ -25,3 +25,8 @@ Si estás en Linux y tienes permisos de ejecución, puedes correr directamente:
 ```sh
 ./<test_script>.sh
 ```
+ o simplemente:
+
+```sh
+sh test.sh
+```
