@@ -1,0 +1,109 @@
+V es un lenguaje compilado, imperativo y de propósito general, diseñado para compilación rápida y código sencillo y seguro por defecto. Tiene sintaxis clara inspirada en Go, con tipado estático con inferencia, y construcciones típicas de lenguajes imperativos.
+
+i) Estructuras de control de flujo (enumeración, explicación y ejemplo)
+
+- if / else / else if
+  - Control condicional estándar; evalúa una condición booleana y ejecuta la rama correspondiente.
+  - Ejemplo:
+    fn if_example(x int) {
+        if x < 0 {
+            println('negativo')
+        } else if x == 0 {
+            println('cero')
+        } else {
+            println('positivo')
+        }
+    }
+  - Salida (para -1, 0, 2):
+    negativo
+    cero
+    positivo
+
+- for
+  - Unico bucle que cubre estilo C, rango y while-like.
+  - Ejemplo :
+
+    fn for_examples() {
+        for i := 0; i < 3; i++ { println(i) }
+        for i in 0..3 { println('r' + i.str()) }
+        mut j := 0
+        for j < 2 { println('w' + j.str()); j++ }
+    }
+
+  - Salida:
+    0
+    1
+    2
+    r0
+    r1
+    r2
+    w0
+    w1
+
+- match
+  - Equivalente a switch/pattern-match limitado, permite listar casos y un `else` por defecto.
+  - Ejemplo:
+
+    fn match_example(x int) {
+        match x {
+            0 { println('zero') }
+            1, 2 { println('one or two') }
+            else { println('many') }
+        }
+    }
+
+  - Salida (para 0,2,5):
+
+    zero
+    one or two
+    many
+
+- break / continue / return
+  - Explicación: control de interrupción de bucles y retorno de funciones (uso estándar).
+
+- or {} (manejo de errores)
+  - V usa constructos `?`/`or {}` para manejo explícito de errores sin excepciones.
+
+  - Ejemplo:
+
+    fn may_fail(ok bool) ?int { if ok { return 42 } return error('failed') }
+    // Uso: x := may_fail(true) or { println('error: $err'); return }
+
+- defer
+  - Posterga la ejecución hasta el final de la función (similar a Go).
+  - Ejemplo:
+
+    fn defer_example() { defer { println('deferred') } println('body') }
+
+  - Salida:
+
+    body
+    deferred
+
+ii) Orden y estrategia de evaluación
+
+A. Evaluación normal o aplicativa; perezosa?
+  - V usa evaluación aplicativa (estricta, eager): las expresiones y los argumentos de función se evalúan antes de entrar en la función. V no ofrece evaluación perezosa por defecto; para comportamiento lazy hay que usar cierres/funciones explícitas.
+
+B. Orden de evaluación de argumentos/operandos
+  - V evalúa argumentos y operandos de izquierda a derecha. Operadores lógicos `&&` y `||` son cortocircuitados (evaluación izquierda-derecha y detención cuando el resultado es decidido).
+
+Ejemplo demostrativo (orden y cortocircuito)
+
+fn trace(n int) int { println('eval ' + n.str()); return n }
+fn add(a int, b int) int { println('add called'); return a + b }
+fn main() {
+    println('case1:')
+    println(add(trace(1), trace(2)))
+    println('case2 (short-circuit &&):')
+    if false && (trace(3) == 3) { println('should not') }
+}
+
+Salida esperada:
+
+case1:
+eval 1
+eval 2
+add called
+3
+case2 (short-circuit &&):

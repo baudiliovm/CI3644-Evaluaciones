@@ -1,0 +1,138 @@
+# Pregunta 3 — Explicación paso a paso y resultados
+## (a) Iterador `suspenso`: qué hace y qué imprime
+
+Definición (equivalente al enunciado):
+
+- Si b está vacía, yield a.
+- Si b no está vacía:
+  - yield a + b[0]
+  - luego itera recursivamente sobre suspenso(b[0], b[1:]) y reemite cada valor.
+
+Al ejecutar:
+
+for x in suspenso(X + Y + Z, [X, Y, Z]):
+     print(x)
+
+Traza de llamadas por marcos de pila:
+
+1) Llamada A: suspenso(a0, [X, Y, Z]) con a0 = X + Y + Z
+    - imprime a0 + X = (X + Y + Z) + X
+    - llama a B: suspenso(X, [Y, Z])
+
+2) Llamada B: suspenso(X, [Y, Z])
+    - imprime X + Y
+    - llama a C: suspenso(Y, [Z])
+
+3) Llamada C: suspenso(Y, [Z])
+    - imprime Y + Z
+    - llama a D: suspenso(Z, [])
+
+4) Llamada D: suspenso(Z, [])
+    - imprime Z
+    - retorna
+
+Por tanto, el bucle imprime exactamente cuatro valores, en este orden:
+
+- X + Y + Z + X
+- X + Y
+- Y + Z
+- Z
+
+Con X=6, Y=6, Z=5, los valores son:
+
+- 6+6+5+6 = 23
+- 6+6 = 12
+- 6+5 = 11
+- 5
+
+Salida final:
+
+23
+12
+11
+5
+
+## (b) Iterador `misterio`: qué hace y qué imprime
+
+Definición (equivalente al enunciado):
+
+- Si n == 0: yield [1]
+- Si n > 0:
+  - por cada x producido por misterio(n-1):
+     - r = []
+     - por cada y en suspenso(0, x): agregar y a r
+     - yield r
+
+Idea clave:
+
+- Para una lista x = [x0, x1, ..., xk], suspenso(0, x) produce x0, (x0+x1), (x1+x2), ..., (x_{k-1}+x_k), x_k.
+- Esto construye exactamente la siguiente fila del triángulo de Pascal a partir de x.
+- Luego, misterio(n) genera la fila n de Pascal a partir de la fila n-1.
+
+Trazado de llamadas (al nivel de marcos) hasta el caso base y subida:
+
+misterio(5)
+└─ misterio(4)
+    └─ misterio(3)
+        └─ misterio(2)
+            └─ misterio(1)
+                └─ misterio(0)  → yield [1]
+                  ↑ con x=[1]          → suspenso(0,[1])  → [1,1]         → yield [1,1]
+                ↑ con x=[1,1]        → suspenso(0,…)     → [1,2,1]       → yield [1,2,1]
+             ↑ con x=[1,2,1]        → suspenso(0,…)     → [1,3,3,1]     → yield [1,3,3,1]
+          ↑ con x=[1,3,3,1]        → suspenso(0,…)     → [1,4,6,4,1]   → yield [1,4,6,4,1]
+        ↑ con x=[1,4,6,4,1]        → suspenso(0,…)     → [1,5,10,10,5,1] → yield [1,5,10,10,5,1]
+
+Importante: misterio(n) tal como está escrito “emite” SOLO una lista en cada nivel (la fila n), porque el for x in misterio(n-1) itera sobre una única lista (la fila n-1).
+
+Por eso, el fragmento:
+
+for x in misterio(5):
+     print(x)
+
+imprime una única línea con la fila 5 del triángulo de Pascal:
+
+[1, 5, 10, 10, 5, 1]
+
+Si quisieras imprimir todas las filas de `0` a `5`, podrías hacer:
+
+for k in range(6):
+     for fila in misterio(k):
+          print(fila)
+
+Nota: ya conocemos el comportamiento de suspenso, por lo que no es necesario detallar sus pasos internos dentro del ciclo de misterio.
+
+
+## (c) Iterador que rinde elementos en orden (sin “preordenar” la lista)
+
+Requisito: dado un arreglo de enteros, queremos un iterador que devuelva sus elementos en orden ascendente. El ordenamiento debe ocurrir como parte de la lógica del iterador (no vale ordenar primero y luego emitir).
+
+Dos implementaciones válidas:
+
+1) Con heap (eficiente):
+    - Copia la lista a un min-heap interno (heapq.heapify).
+    - Luego va extrayendo mínimos (heappop) y rindiéndolos uno a uno.
+    - Complejidad: construir O(n) + cada heappop O(log n).
+
+2) Por selección iterativa (simple):
+    - En cada paso, busca el mínimo entre los elementos no usados y lo emite.
+    - Complejidad: O(n^2).
+
+Ejemplo con la lista [1, 3, 3, 2, 1]:
+
+- Salida esperada: 1 1 2 3 3
+- Ambas implementaciones emiten: [1, 1, 2, 3, 3]
+
+---
+
+## Cómo reproducir
+
+Ejecutar el demo:
+
+python3 examen_2/p3/resp.py
+
+Ejecutar las pruebas automatizadas:
+
+cd examen_2/p3
+pytest -q
+
