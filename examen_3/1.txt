@@ -1,0 +1,98 @@
+Lenguajes de Programación I (C13641)
+Examen 3 - Parte Escrita
+
+Nombre: Baudilio Velasquez
+Carné: 18-10665
+
+PREGUNTA 1:
+
+1. DEFINICIÓN DE VARIABLES Y CONSTANTES
+
+X = 6
+Y = 6
+Z = 5
+
+2. CÁLCULO DE LÍMITES E ÍNDICES
+
+Límites Inferiores (L):
+L1 = min(X, Y) = min(6, 6) = 6
+L2 = min(X, Z) = min(6, 5) = 5
+L3 = min(Y, Z) = min(6, 5) = 5
+
+Límites Superiores (U):
+U1 = max(X, Y) + 1 = max(6, 6) + 1 = 7
+U2 = max(X, Z) + 1 = max(6, 5) + 1 = 7
+U3 = max(Y, Z) + 1 = max(6, 5) + 1 = 7
+
+Índices Objetivo (I, J, K):
+I = floor((L1 + U1) / 2) = floor((6 + 7) / 2) = floor(6.5) = 6
+J = floor((L2 + U2) / 2) = floor((5 + 7) / 2) = floor(6.0) = 6
+K = floor((L3 + U3) / 2) = floor((5 + 7) / 2) = floor(6.0) = 6
+
+Dimensiones del Arreglo (D = U - L + 1):
+D1 = 7 - 6 + 1 = 2 elementos
+D2 = 7 - 5 + 1 = 3 elementos
+D3 = 7 - 5 + 1 = 3 elementos
+
+Datos de Memoria:
+Dirección Base (B) = 0
+Tamaño del Tipo T (S) = 4 bytes
+Elemento a buscar: M[6][6][6]
+
+
+PARTE (A): DIRECCIÓN EN ROW-MAJOR ORDER (FILAS)
+
+En Row-Major, los elementos se almacenan fila por fila. El último índice (K)
+es el que cambia más rápido (es contiguo en memoria).
+
+La fórmula para el desplazamiento (offset) es:
+Offset = (i_norm * D2 * D3) + (j_norm * D3) + k_norm
+
+Donde los índices normalizados (índice actual - límite inferior) son:
+i_norm = I - L1 = 6 - 6 = 0
+j_norm = J - L2 = 6 - 5 = 1
+k_norm = K - L3 = 6 - 5 = 1
+
+Cálculo del Desplazamiento:
+1. Dimensión 1: 0 * 3 * 3 = 0
+2. Dimensión 2: 1 * 3     = 3
+3. Dimensión 3: 1         = 1
+-----------------------------
+Total Offset              = 4 posiciones
+
+Cálculo de la Dirección Final:
+Dirección = Base + (Tamaño * Offset)
+Dirección = 0 + (4 * 4)
+Dirección = 16
+
+RESPUESTA (A): La dirección es 16.
+
+
+PARTE (B): DIRECCIÓN EN COLUMN-MAJOR ORDER (COLUMNAS)
+
+En Column-Major, los elementos se almacenan columna por columna. El primer
+índice (I) es el que cambia más rápido.
+
+La fórmula para el desplazamiento (offset) es:
+Offset = (k_norm * D2 * D1) + (j_norm * D1) + i_norm
+
+Usando los mismos índices normalizados y dimensiones calculados anteriormente:
+k_norm = 1
+j_norm = 1
+i_norm = 0
+D1 = 2
+D2 = 3
+
+Cálculo del Desplazamiento:
+1. Dimensión 3: 1 * 3 * 2 = 6
+2. Dimensión 2: 1 * 2     = 2
+3. Dimensión 1: 0         = 0
+-----------------------------
+Total Offset              = 8 posiciones
+
+Cálculo de la Dirección Final:
+Dirección = Base + (Tamaño * Offset)
+Dirección = 0 + (4 * 8)
+Dirección = 32
+
+RESPUESTA (B): La dirección es 32.
